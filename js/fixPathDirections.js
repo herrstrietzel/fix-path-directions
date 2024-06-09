@@ -423,7 +423,8 @@ function parsePathDataNormalized(d, options = {}) {
 
 
     // offsets for absolute conversion
-    let offX, offY, lastX, lastY;
+    let offX, offY, lastX, lastY, M;
+
 
     for (let c = 0; c < commands.length; c++) {
         let com = commands[c];
@@ -437,6 +438,7 @@ function parsePathDataNormalized(d, options = {}) {
         let values = com.substring(1, com.length)
             .trim()
             .split(" ").filter(Boolean);
+
 
         /**
          * A - Arc commands
@@ -510,15 +512,17 @@ function parsePathDataNormalized(d, options = {}) {
                 offY = values[1];
                 lastX = offX;
                 lastY = offY;
+                M = { x: values[0], y: values[1] };
             }
+
+
 
             let typeFirst = comChunks[0].type;
             typeAbs = typeFirst.toUpperCase()
-
-            // first M is always absolute
             isRel = typeFirst.toLowerCase() === typeFirst && pathData.length ? true : false;
 
             for (let i = 0; i < comChunks.length; i++) {
+
                 let com = comChunks[i];
                 let type = com.type;
                 let values = com.values;
@@ -557,6 +561,10 @@ function parsePathDataNormalized(d, options = {}) {
                         case "m":
                         case "l":
                         case "t":
+                            //update last M
+                            if (type === 'm') {
+                                M = { x: values[0] + offX, y: values[1] + offY };
+                            }
                             com.values = [values[0] + offX, values[1] + offY];
                             break;
 
@@ -580,6 +588,13 @@ function parsePathDataNormalized(d, options = {}) {
                                 values[3] + offY
                             ];
                             break;
+
+                        case 'z':
+                        case 'Z':
+                            lastX = M.x;
+                            lastY = M.y;
+                        break;
+            
                     }
                 }
                 // is absolute
@@ -618,7 +633,7 @@ function parsePathDataNormalized(d, options = {}) {
                  * convert arcs 
                  */
                 p0 = { x: lastX, y: lastY }
-                if (hasArcs && com.type === 'A') {
+                if (arcToCubic && hasArcs && com.type === 'A') {
                     if (typeRel === 'a') {
                         let comArc = arcToBezier(p0, com.values, arcAccuracy)
                         comArc.forEach(seg => {
@@ -659,7 +674,7 @@ function parsePathDataNormalized(d, options = {}) {
     * convert quadratics to cubic
     * and round
     */
-    for(let i=0; i<pathData.length; i++){
+    for (let i = 0; i < pathData.length; i++) {
         let com = pathData[i];
         if (com.type === 'Q' && hasQuadratics && quadraticToCubic) {
             let comPrev = pathData[i - 1];
@@ -668,9 +683,9 @@ function parsePathDataNormalized(d, options = {}) {
             let p0 = { x: comPrevValues[comPrevValuesL - 2], y: comPrevValues[comPrevValuesL - 1] }
             pathData[i] = quadratic2Cubic(p0, com.values)
         }
-        pathData[i].values = pathData[i].values.length>1 ? pathData[i].values.map(val => { return +val.toFixed(9) }) : com.values
+        pathData[i].values = pathData[i].values.length > 1 ? pathData[i].values.map(val => { return +val.toFixed(9) }) : com.values
     }
-    
+
     return pathData;
 
 }
@@ -829,9 +844,9 @@ function arcToBezier(p0, values, splitSegments = 1) {
 
 
 /**
-* serialize pathData array to 
-* d attribute string 
-*/
+     * serialize pathData array to 
+     * d attribute string 
+     */
 function pathDataToD(pathData) {
     let d = `${pathData.map(com => { return com.type + com.values.join(' ') }).join(' ')}`;
     return d;
