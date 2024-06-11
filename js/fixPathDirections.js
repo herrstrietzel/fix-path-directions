@@ -3,7 +3,7 @@
  * stringified pathdata
  * parses and normalizes path before
  */
-function getFixedPathData(d, options){
+function getFixedPathData(d, options) {
     options = {
         //defaults
         ...{
@@ -15,7 +15,7 @@ function getFixedPathData(d, options){
         ...options
     }
 
-    let {returnD, toClockwise} = options
+    let { returnD, toClockwise } = options
     let pathData = Array.isArray(d) ? d : parsePathDataNormalized(d, options)
     let pathDataFixed = fixPathDataDirections(pathData, toClockwise)
     let dNew = pathDataToD(pathDataFixed, 3)
@@ -30,7 +30,7 @@ function getFixedPathData(d, options){
  * absolute and longhand commands
  * toClockwise = force default direction
  */
-function fixPathDataDirections(pathData, toClockwise=false, sort=true) {
+function fixPathDataDirections(pathData, toClockwise = false, sort = true) {
 
     pathData = JSON.parse(JSON.stringify(pathData));
 
@@ -41,7 +41,7 @@ function fixPathDataDirections(pathData, toClockwise=false, sort=true) {
     pathDataArr.forEach((pathData, i) => {
         let vertices = getPathDataPoly(pathData)
         let area = polygonArea(vertices)
-        let isClockwise = area>=0
+        let isClockwise = area >= 0
         polys.push({ pts: vertices, bb: getPolyBBox(vertices), cw: isClockwise, index: i, inter: 0, includes: [], includedIn: [] })
     })
 
@@ -78,31 +78,31 @@ function fixPathDataDirections(pathData, toClockwise=false, sort=true) {
         let { cw, includedIn, includes } = poly
 
         // outer path direction to counter clockwise
-        if (!includedIn.length && cw && !toClockwise 
+        if (!includedIn.length && cw && !toClockwise
             || !includedIn.length && !cw && toClockwise
-         ) {
+        ) {
             pathDataArr[i] = reversePathData(pathDataArr[i]);
             polys[i].cw = polys[i].cw ? false : true
             cw = polys[i].cw
         }
 
         // reverse inner sub paths
-        for(let j=0; j<includes.length; j++){
+        for (let j = 0; j < includes.length; j++) {
             let ind = includes[j];
             let child = polys[ind];
 
-            if (child.cw === cw ) {
+            if (child.cw === cw) {
                 pathDataArr[ind] = reversePathData(pathDataArr[ind]);
                 polys[ind].cw = polys[ind].cw ? false : true
             }
-    
+
         }
     }
 
     // sort path data array by position
-    if(sort){
-        polys.sort((a, b) => a.bb.top - b.bb.top || a.bb.width - b.bb.width || a.bb.left - b.bb.left  );
-        pathDataArr = polys.map(poly=>{return pathDataArr[poly.index]})
+    if (sort) {
+        polys.sort((a, b) => a.bb.top - b.bb.top || a.bb.width - b.bb.width || a.bb.left - b.bb.left);
+        pathDataArr = polys.map(poly => { return pathDataArr[poly.index] })
     }
 
 
@@ -110,100 +110,101 @@ function fixPathDataDirections(pathData, toClockwise=false, sort=true) {
 
 }
 
-
-
 /**
  * reverse pathdata
  * make sure all command coordinates are absolute and
  * shorthands are converted to long notation
  */
 function reversePathData(pathDataInput) {
-  let pathData = Array.isArray(pathDataInput)
-    ? JSON.parse(JSON.stringify(pathDataInput))
-    : parsePathDataNormalized(pathDataInput);
 
-  // helper to rearrange control points for all command types
-  const reverseControlPoints = (type, values) => {
-    let controlPoints = [];
-    let endPoints = [];
-    if (type !== "A") {
-      for (let p = 0; p < values.length; p += 2) {
-        controlPoints.push([values[p], values[p + 1]]);
-      }
-      endPoints = controlPoints.pop();
-      controlPoints.reverse();
-    }
-    // is arc
-    else {
-      //reverse sweep;
-      let sweep = values[4] == 0 ? 1 : 0;
-      controlPoints = [values[0], values[1], values[2], values[3], sweep];
-      endPoints = [values[5], values[6]];
-    }
-    return { controlPoints, endPoints };
-  };
+    let pathData = Array.isArray(pathDataInput)
+        ? JSON.parse(JSON.stringify(pathDataInput))
+        : parsePathDataNormalized(pathDataInput);
 
-  // split compound paths
-  let pathDataArr = Array.isArray(pathDataInput) ? [pathData] : splitSubpaths(pathData);
-  let pathDataNew = [];
+    //split sub paths
+    let pathDataArr = Array.isArray(pathDataInput) ? [pathData] : splitSubpaths(pathData);
 
-  // start compiling new path data
-  pathDataArr.forEach((pathData) => {
-    let closed =
-      pathData[pathData.length - 1].type.toLowerCase() === "z" ? true : false;
-    if (closed) {
-      // add lineto closing space between Z and M
-      pathData = addClosePathLineto(pathData);
-      // remove Z closepath
-      pathData.pop();
-    }
+    // helper to rearrange control points for all command types
+    const reverseControlPoints = (type, values) => {
+        let controlPoints = [];
+        let endPoints = [];
+        if (type !== "A") {
+            for (let p = 0; p < values.length; p += 2) {
+                controlPoints.push([values[p], values[p + 1]]);
+            }
+            endPoints = controlPoints.pop();
+            controlPoints.reverse();
+        }
+        // is arc
+        else {
+            //reverse sweep;
+            let sweep = values[4] == 0 ? 1 : 0;
+            controlPoints = [values[0], values[1], values[2], values[3], sweep];
+            endPoints = [values[5], values[6]];
+        }
+        return { controlPoints, endPoints };
+    };
 
-    // define last point as new M if path isn't closed
-    let valuesLast = pathData[pathData.length - 1].values;
-    let valuesLastL = valuesLast.length;
-    let M = closed
-      ? pathData[0]
-      : {
-          type: "M",
-          values: [valuesLast[valuesLastL - 2], valuesLast[valuesLastL - 1]]
-        };
-    // starting M stays the same – unless the path is not closed
-    pathDataNew.push(M);
 
-    // reverse path data command order for processing
-    pathData.reverse();
-    for (let i = 1; i < pathData.length; i++) {
-      let com = pathData[i];
-      let type = com.type;
-      let values = com.values;
-      let comPrev = pathData[i - 1];
-      let typePrev = comPrev.type;
-      let valuesPrev = comPrev.values;
+    // start compiling new path data
+    let pathDataNew = [];
 
-      // get reversed control points and new end coordinates
-      let controlPointsPrev = reverseControlPoints(typePrev, valuesPrev)
-        .controlPoints;
-      let endPoints = reverseControlPoints(type, values).endPoints;
+    pathDataArr.forEach((pathData) => {
 
-      // create new path data
-      let newValues = [];
-      newValues = [controlPointsPrev, endPoints].flat();
-      pathDataNew.push({
-        type: typePrev,
-        values: newValues
-      });
-    }
+        let closed =
+            pathData[pathData.length - 1].type.toLowerCase() === "z" ? true : false;
+        if (closed) {
+            // add lineto closing space between Z and M
+            pathData = addClosePathLineto(pathData);
+            // remove Z closepath
+            pathData.pop();
+        }
 
-    // add previously removed Z close path
-    if (closed) {
-      pathDataNew.push({
-        type: "z",
-        values: []
-      });
-    }
-  });
+        // define last point as new M if path isn't closed
+        let valuesLast = pathData[pathData.length - 1].values;
+        let valuesLastL = valuesLast.length;
+        let M = closed
+            ? pathData[0]
+            : {
+                type: "M",
+                values: [valuesLast[valuesLastL - 2], valuesLast[valuesLastL - 1]]
+            };
+        // starting M stays the same – unless the path is not closed
+        pathDataNew.push(M);
 
-  return pathDataNew;
+        // reverse path data command order for processing
+        pathData.reverse();
+        for (let i = 1; i < pathData.length; i++) {
+            let com = pathData[i];
+            let type = com.type;
+            let values = com.values;
+            let comPrev = pathData[i - 1];
+            let typePrev = comPrev.type;
+            let valuesPrev = comPrev.values;
+
+            // get reversed control points and new end coordinates
+            let controlPointsPrev = reverseControlPoints(typePrev, valuesPrev).controlPoints;
+            let endPoints = reverseControlPoints(type, values).endPoints;
+
+            // create new path data
+            let newValues = [];
+            newValues = [controlPointsPrev, endPoints].flat();
+            pathDataNew.push({
+                type: typePrev,
+                values: newValues.flat()
+            });
+        }
+
+        // add previously removed Z close path
+        if (closed) {
+            pathDataNew.push({
+                type: "z",
+                values: []
+            });
+        }
+    })
+
+    return pathDataNew;
 }
 
 /** Get relationship between a point and a polygon using ray-casting algorithm
@@ -248,9 +249,9 @@ function getPathDataPoly(pathData) {
     let poly = [];
     for (let i = 0; i < pathData.length; i++) {
         let com = pathData[i]
-        let prev = i>0 ? pathData[i-1] : pathData[i];
+        let prev = i > 0 ? pathData[i - 1] : pathData[i];
         let { type, values } = com;
-        let p0 =  {x: prev.values[prev.values.length-2], y: prev.values[prev.values.length-1] };
+        let p0 = { x: prev.values[prev.values.length - 2], y: prev.values[prev.values.length - 1] };
         let p = values.length ? { x: values[values.length - 2], y: values[values.length - 1] } : ''
         let cp1 = values.length ? { x: values[0], y: values[1] } : ''
 
@@ -258,19 +259,19 @@ function getPathDataPoly(pathData) {
 
             // convert to cubic to get polygon
             case 'A':
-                if(typeof arcToBezier !== 'function'){
+                if (typeof arcToBezier !== 'function') {
                     //console.log('has no arc to cubic conversion');
                     break;
                 }
                 let cubic = arcToBezier(p0, values)
-                cubic.forEach(com=>{
+                cubic.forEach(com => {
                     let vals = com.values
-                    let cp1 = {x:vals[0], y:vals[1]}
-                    let cp2 = {x:vals[2], y:vals[3]}
-                    let p = {x:vals[4], y:vals[5]}
+                    let cp1 = { x: vals[0], y: vals[1] }
+                    let cp2 = { x: vals[2], y: vals[3] }
+                    let p = { x: vals[4], y: vals[5] }
                     poly.push(cp1, cp2, p)
                 })
-            break;
+                break;
 
             case 'C':
                 let cp2 = { x: values[2], y: values[3] }
@@ -601,8 +602,8 @@ function parsePathDataNormalized(d, options = {}) {
                         case 'Z':
                             lastX = M.x;
                             lastY = M.y;
-                        break;
-            
+                            break;
+
                     }
                 }
                 // is absolute
@@ -850,7 +851,6 @@ function arcToBezier(p0, values, splitSegments = 1) {
     return pathDataArc;
 }
 
-
 /**
      * serialize pathData array to 
      * d attribute string 
@@ -859,4 +859,3 @@ function pathDataToD(pathData) {
     let d = `${pathData.map(com => { return com.type + com.values.join(' ') }).join(' ')}`;
     return d;
 }
-
