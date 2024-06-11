@@ -115,11 +115,22 @@ function fixPathDataDirections(pathData, toClockwise = false, sort = true) {
  * make sure all command coordinates are absolute and
  * shorthands are converted to long notation
  */
-function reversePathData(pathDataInput) {
+function reversePathData(pathDataInput, options) {
+  
+    options = {
+        //defaults
+        ...{
+            arcToCubic: false,
+            quadraticToCubic: false,
+            toClockwise: false,
+            returnD: false
+        },
+        ...options
+    }
 
     let pathData = Array.isArray(pathDataInput)
         ? JSON.parse(JSON.stringify(pathDataInput))
-        : parsePathDataNormalized(pathDataInput);
+        : parsePathDataNormalized(pathDataInput, options);
 
     //split sub paths
     let pathDataArr = Array.isArray(pathDataInput) ? [pathData] : splitSubpaths(pathData);
@@ -204,7 +215,7 @@ function reversePathData(pathDataInput) {
         }
     })
 
-    return pathDataNew;
+    return options.returnD ? pathDataToD(pathDataNew) : pathDataNew;
 }
 
 /** Get relationship between a point and a polygon using ray-casting algorithm
