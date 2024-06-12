@@ -43,7 +43,7 @@ path.setAttribute("d", pathDataReversed);
 
 
 ## Demos
+* [Fix directions UI](https://codepen.io/herrstrietzel/pen/jOoGrxO?editors=1010)
 * [Auto-fix compound path simple](https://codepen.io/herrstrietzel/pen/mdYBrge?editors=1010)
-* [Fix directions simple](https://codepen.io/herrstrietzel/pen/GRavQoW?editors=1010)
 * [Reverse path directions](https://codepen.io/herrstrietzel/pen/xxNXRbe?editors=1010)
 
