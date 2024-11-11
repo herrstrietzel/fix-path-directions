@@ -872,7 +872,6 @@
     }
 
 
-
     /**
      * split compound paths into sub path data array
      */
@@ -913,15 +912,8 @@
     fixPathDirections.getFixedPathDataString = getFixedPathDataString;
     fixPathDirections.fixPathDataDirections = fixPathDataDirections;
     fixPathDirections.reversePathData = reversePathData;
-    //fixPathDirections.isPointInPolygon = isPointInPolygon;
-    //fixPathDirections.getPathDataPoly = getPathDataPoly;
-    //fixPathDirections.getPolyBBox = getPolyBBox;
     fixPathDirections.splitSubpaths = splitSubpaths;
-    //fixPathDirections.addClosePathLineto = addClosePathLineto;
-    //fixPathDirections.polygonArea = polygonArea;
     fixPathDirections.parsePathDataNormalized = parsePathDataNormalized;
-    // fixPathDirections.quadratic2Cubic = quadratic2Cubic;
-    // fixPathDirections.arcToBezier = arcToBezier;
     fixPathDirections.pathDataToD = pathDataToD;
     return fixPathDirections;
 
