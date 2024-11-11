@@ -95,7 +95,6 @@ function fixPathDataDirections(pathData, toClockwise = false, sort = true) {
                 pathDataArr[ind] = reversePathData(pathDataArr[ind]);
                 polys[ind].cw = polys[ind].cw ? false : true
             }
-
         }
     }
 
@@ -116,7 +115,7 @@ function fixPathDataDirections(pathData, toClockwise = false, sort = true) {
  * shorthands are converted to long notation
  */
 function reversePathData(pathDataInput, options) {
-  
+
     options = {
         //defaults
         ...{

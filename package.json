@@ -1,0 +1,27 @@
+{
+  "name": "fix-path-directions",
+  "version": "0.9.0",
+  "description": "Correct sub path directions in compound path for apps that don't support fill-rules",
+  "main": "js/fixPathDirections.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/herrstrietzel/fix-path-directions.git"
+  },
+  "keywords": [
+    "SVG",
+    "path-data",
+    "path-directions",
+    "compound-path",
+    "fill-rules",
+    "bezier"
+  ],
+  "author": "herrstrietzel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/herrstrietzel/fix-path-directions/issues"
+  },
+  "homepage": "https://github.com/herrstrietzel/fix-path-directions#readme"
+}
