@@ -1,6 +1,6 @@
 {
   "name": "fix-path-directions",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Correct sub path directions in compound path for apps that don't support fill-rules",
   "main": "js/fixPathDirections.js",
   "scripts": {
