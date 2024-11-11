@@ -40,8 +40,10 @@ let pathDataFixed = getFixedPathDataString(d);
 
 // apply to path element
 path.setAttribute("d", pathDataFixed);
-
 ``` 
+
+See `examples/simple.html`
+
 
 ### Example 2: auto-fix from stringified pathdata - with options
 ... However, you may also want to apply more fine-grained normalization options. 
@@ -80,9 +82,37 @@ let pathDataReversed = reversePathData(d, options);
 path.setAttribute("d", pathDataReversed);
 ```
 
+### Example 4: optimize path data
+You may also optimize the pathdata to get a more compact path data output by adding a pathdata compatible helper script like  `pathDataConvert.js` (from [svg-parse-path-normalized](https://github.com/herrstrietzel/svg-parse-path-normalized) ).
+```
+<!-- optional conversions -->
+<script src="https://cdn.jsdelivr.net/npm/svg-parse-path-normalized@latest/js/pathDataConvert.min.js"></script>
+```
+
+```
+let options = {toShorthands:true, toRelative:true, decimals:1}
+let pathDataFixed = getFixedPathData(d).convert(options).toD(1, true)
+path.setAttribute("d", pathDataFixed);
+```
+
+See `examples/simple_optimized.html`
+
 
 ## Demos
 * [Fix directions UI](https://codepen.io/herrstrietzel/pen/jOoGrxO?editors=1010)
 * [Auto-fix compound path simple](https://codepen.io/herrstrietzel/pen/mdYBrge?editors=1010)
 * [Reverse path directions](https://codepen.io/herrstrietzel/pen/xxNXRbe?editors=1010)
+
+
+## Credits
+* Jarek Foksa for his [great polyfill](https://github.com/jarek-foksa/path-data-polyfill) heavily inspring to adopt the new pathData interface methodology and for contributing to the specification
+* Dmitry Baranovskiy for (raphael.j/snap.svg) [pathToAbsolute/Relative functions](https://github.com/DmitryBaranovskiy/raphael/blob/master/raphael.js#L1848) 
+* Vitaly Puzrin (fontello) for the arc to cubic conversion method  [a2c.js](https://github.com/fontello/svgpath/blob/master/lib/a2c.js) and [cubic to quadratic approximation](https://github.com/fontello/cubic2quad/blob/master/test/cubic2quad.js)
+* Mike "POMAX" Kammermans for his great [A Primer on Bézier Curves](https://pomax.github.io/bezierinfo)
+
+
+## Related projects
+* [svg-parse-path-normalized](https://github.com/herrstrietzel/svg-parse-path-normalized) – Parse path data from string including fine-grained normalizing options
+* [svg-getpointatlength](https://github.com/herrstrietzel/svg-getpointatlength) – Calculates a path's length or points at length based on raw pathdata
+* [svg-pathdata-getbbox](svg-pathdata-getbbox) – Calculates a path bounding box based on its raw pathdata
 

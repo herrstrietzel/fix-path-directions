@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix path Directions simple</title>
+
+    <style>
+        .layout {
+            width: 50%;
+            margin: 0 auto;
+        }
+
+        svg {
+            overflow:visible;
+            display:block;
+            margin: 0 auto;
+
+            path {
+                stroke: red;
+            }
+
+        }
+
+        textarea{
+            width:100%;
+            min-height:10em;
+            margin-top:1em;
+        }
+    </style>
+</head>
+
+<body>
+
+    <script src="../js/fixPathDirections.js" defer></script>
+    <script src="https://www.unpkg.com/svg-parse-path-normalized@latest/js/pathDataConvert.js" defer></script>
+
+
+    <p><button id="btnFix" type="button">Fix directions</button></p>
+
+    <div class="layout">
+        <svg width="300" viewBox="0 0 100 100">
+            <path id="path" data-fill-rule="evenodd" d="M50 0a50 50 0 110 100 50 50 0 110-100m0 30a20 20 0 110 40 20 20 0 110-40m0-10q12.42 0 21.21 8.79t8.79 21.21-8.79 21.21-21.21 8.79-21.21-8.79-8.79-21.21 8.79-21.21 21.21-8.79m-40-20a5 5 0 110 10 5 5 0 110-10m80 0a5 5 0 110 10 5 5 0 110-10m0 2.5a2.5 2.5 0 110 5 2.5 2.5 0 110-5m-45 42.5h10v10h-10zm-5-5h20v20h-20zm10-30c22.07 0 40 17.93 40 40s-17.93 40-40 40-40-17.93-40-40 17.93-40 40-40" />
+        </svg>
+
+        <textarea  id="out" ></textarea>
+
+    </div>
+
+
+    <script>
+
+        let path = document.querySelector('path');
+        let d = path.getAttribute('d');
+        out.value= d;
+
+        btnFix.onclick = () => {
+            let options = {toShorthands:true, toRelative:true, decimals:1}
+            let pathDataFixed = getFixedPathData(d).convert(options).toD(1, true)
+            path.setAttribute("d", pathDataFixed);
+            out.value= pathDataFixed;
+        }
+
+
+    </script>
+
+</body>
+
+</html>

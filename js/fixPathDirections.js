@@ -190,8 +190,7 @@
         }
 
 
-
-        //pathData = JSON.parse(JSON.stringify(pathData));
+        pathData = JSON.parse(JSON.stringify(pathData));
 
         // split compound paths
         let pathDataArr = splitSubpaths(pathData);
@@ -266,8 +265,6 @@
         return pathDataArr.flat()
 
     }
-
-
 
 
     /**
@@ -894,16 +891,57 @@
     }
 
 
-    /**
-    * serialize pathData array to 
-    * d attribute string 
-    */
-    function pathDataToD(pathData, decimals = -1) {
+    // wrapper for stringified path data output
+    Array.prototype.toD = function (decimals = -1, minify = false) {
+        return pathDataToD(this, decimals, minify);
+    }
 
-        let d = `${pathData.map(com => {
-            let values = decimals > -1 ? com.values.map(val => { return +val.toFixed(decimals) }) : com.values;
-            return com.type + values.join(' ')
-        }).join(' ')}`;
+    /**
+     * serialize pathData array to 
+     * d attribute string 
+     */
+    function pathDataToD(pathData, decimals = -1, minify = false) {
+
+        // implicit l command
+        if (pathData[1].type === "l" && minify) {
+            pathData[0].type = "m";
+        }
+        let d = `${pathData[0].type}${pathData[0].values.join(" ")}`;
+
+        for (let i = 1; i < pathData.length; i++) {
+            let com0 = pathData[i - 1];
+            let com = pathData[i];
+            let { type, values } = com;
+
+            // minify arctos
+            if (minify && type === 'A' || type === 'a') {
+                values = [values[0], values[1], values[2], [values[3], values[4], values[5]].join(''), values[6]]
+            }
+
+            // round
+            if (values.length && decimals > -1) {
+                values = values.map(val => { return typeof val === 'number' ? +val.toFixed(decimals) : val })
+            }
+
+            // omit type for repeated commands
+            type = (com0.type === com.type && com.type.toLowerCase() != 'm' && minify) ?
+                " " : (
+                    (com0.type === "m" && com.type === "l") ||
+                    (com0.type === "M" && com.type === "l") ||
+                    (com0.type === "M" && com.type === "L")
+                ) && minify ?
+                    " " : com.type;
+
+            d += `${type}${values.join(" ")}`;
+        }
+
+        if (minify) {
+            d = d
+                .replaceAll(" 0.", " .")
+                .replaceAll(" -", "-")
+                .replaceAll("-0.", "-.")
+                .replaceAll("Z", "z");
+        }
         return d;
     }
 
@@ -920,5 +958,5 @@
 });
 
 if (typeof module === 'undefined') {
-    var { getFixedPathData, getFixedPathDataString, fixPathDataDirections, reversePathData,  splitSubpaths, parsePathDataNormalized, pathDataToD } = fixPathDirections;
+    var { getFixedPathData, getFixedPathDataString, fixPathDataDirections, reversePathData, splitSubpaths, parsePathDataNormalized, pathDataToD } = fixPathDirections;
 }
