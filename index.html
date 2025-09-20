@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix path directions</title>
+
+
+    <link rel="stylesheet" href="demo/style.css">
+    <script src="js/fixPathDirections.js" defer></script>
+
+    <script src="demo/app.js" defer></script>
+
+
+</head>
+
+<body>
+
+    <h1>Correct sub path directions in compound path</h1>
+
+    <h2>Messed up path directions – relying on SVG fill-rule:evenodd</h2>
+
+    <div class="grd">
+        <div class="col col-preview">
+            <h4>Preview</h4>
+            <svg viewBox="0 0 100 100">
+                <path id="path1" d="M50 0a50 50 0 110 100 50 50 0 110-100m0 30a20 20 0 110 40 20 20 0 110-40m0-10q12.42 0 21.21 8.79t8.79 21.21-8.79 21.21-21.21 8.79-21.21-8.79-8.79-21.21 8.79-21.21 21.21-8.79m-40-20a5 5 0 110 10 5 5 0 110-10m80 0a5 5 0 110 10 5 5 0 110-10m0 2.5a2.5 2.5 0 110 5 2.5 2.5 0 110-5m-45 42.5h10v10h-10zm-5-5h20v20h-20zm10-30c22.07 0 40 17.93 40 40s-17.93 40-40 40-40-17.93-40-40 17.93-40 40-40
+    " />
+            </svg>
+        </div>
+
+        <div class="col col-input">
+            <h4>Enter your path Data</h4>
+            <textarea></textarea>
+
+            <p><button onclick="fixPaths(paths)">Fix directions</button>
+            <button onclick="reverseAllPaths(paths)">Reverse all path directions</button>
+            <label><input type="checkbox" id="showDirections">show directions</label></p>
+        
+        </div>
+
+    </div>
+
+
+    <!-- markers to show commands -->
+    <svg id="svgMarkers" style="width:0; height:0; position:absolute; z-index:-1;float:left;">
+        <defs>
+            <marker id="marker" overflow="visible" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="strokeWidth"
+                markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+                <polygon points="0 0 10 5 0 10" fill="red" />
+            </marker>
+        </defs>
+    </svg>
+
+
+
+</body>
+
+</html>
