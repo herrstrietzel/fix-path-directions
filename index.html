@@ -21,54 +21,52 @@
 
     <h2>Messed up path directions – relying on SVG fill-rule:evenodd</h2>
 
+    <h4>Enter your path Data</h4>
+    <p>
+        <!-- 
+                    <button onclick="fixPaths(paths)">Fix directions</button>
+                -->
+
+        <button id="btnReversePaths">Reverse all path directions</button>
+        <label><input type="checkbox" id="showDirections">show directions</label>
+    </p>
     <div class="grd">
 
         <div class="col col-input">
-            <h4>Enter your path Data</h4>
-            <p>
-                <!-- 
-                    <button onclick="fixPaths(paths)">Fix directions</button>
-                -->
-                
-                <button id="btnReversePaths">Reverse all path directions</button>
-                <label><input type="checkbox" id="showDirections">show directions</label>
-            </p>
-
             <h4>Input PathData</h4>
             <textarea id="pathInput">
                 M 5644.6109 0 a 5644.6109 5644.6109 90 1 1 0 11289.2218 a 5644.6109 5644.6109 90 1 1 0 -11289.2218 m 0 3386.7665 a 2257.8444 2257.8444 90 1 1 0 4515.6887 a 2257.8444 2257.8444 90 1 1 0 -4515.6887 m 0 -1128.9222 q 1402.1213 0 2394.4439 992.3226 t 992.3226 2394.4439 t -992.3226 2394.4439 t -2394.4439 992.3226 t -2394.4439 -992.3226 t -992.3226 -2394.4439 t 992.3226 -2394.4439 t 2394.4439 -992.3226 m -4515.6887 -2257.8444 a 564.4611 564.4611 90 1 1 0 1128.9222 a 564.4611 564.4611 90 1 1 0 -1128.9222 m 9031.3774 0 a 564.4611 564.4611 90 1 1 0 1128.9222 a 564.4611 564.4611 90 1 1 0 -1128.9222 m 0 282.2305 a 282.2305 282.2305 90 1 1 0 564.4611 a 282.2305 282.2305 90 1 1 0 -564.4611 m -5080.1498 4797.9193 h 1128.9222 v 1128.9222 h -1128.9222 z m -564.4611 -564.4611 h 2257.8444 v 2257.8444 h -2257.8444 z m 1128.9222 -3386.7665 c 2491.5313 0 4515.6887 2024.1575 4515.6887 4515.6887 s -2024.1575 4515.6887 -4515.6887 4515.6887 s -4515.6887 -2024.1575 -4515.6887 -4515.6887 s 2024.1575 -4515.6887 4515.6887 -4515.6887
             </textarea>
+        </div>
 
+        <div class="col">
+            <h4>Preview original</h4>
+
+            <svg id="svgPreviewOriginal" viewBox="0 0 100 100">
+                <path id="pathOriginal" d="" />
+            </svg>
+        </div>
+
+
+    </div>
+
+
+    <div class="grd">
+
+        <div class="col">
             <h4>Fixed PathData</h4>
-            <textarea id="pathInputFixed">
-               
+            <textarea id="pathInputFixed" readonly>
             </textarea>
-
 
         </div>
 
 
         <div class="col col-preview">
-            <h4>Preview</h4>
-
-            <svg id="svgPreviewOriginal" viewBox="0 0 100 100">
-                <path id="pathOriginal" d="" />
-            </svg>
-
-
-
+            <h4>Preview fixed</h4>
             <svg id="svgPreview" viewBox="0 0 100 100">
 
                 <!-- large -->
                 <path id="path" d="" />
-                <!-- 
-
-        <path id="path1"
-            d="M50 0a50 50 0 110 100 50 50 0 110-100m0 30a20 20 0 110 40 20 20 0 110-40m0-10q12.42 0 21.21 8.79t8.79 21.21-8.79 21.21-21.21 8.79-21.21-8.79-8.79-21.21 8.79-21.21 21.21-8.79m-40-20a5 5 0 110 10 5 5 0 110-10m80 0a5 5 0 110 10 5 5 0 110-10m0 2.5a2.5 2.5 0 110 5 2.5 2.5 0 110-5m-45 42.5h10v10h-10zm-5-5h20v20h-20zm10-30c22.07 0 40 17.93 40 40s-17.93 40-40 40-40-17.93-40-40 17.93-40 40-40" />
-                -->
-
-
-
             </svg>
         </div>
 

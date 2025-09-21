@@ -28,7 +28,12 @@ label{
     display: grid;
     grid-template-columns: 1fr;
     gap: 1em;
+    row-gap:2em;
     margin-bottom: 2em;
+}
+
+.col{
+    height:calc(100% - 3lh);
 }
 
 @media (min-width:640px) {
@@ -40,7 +45,9 @@ label{
 
 textarea {
     width: 100%;
-    height: 100%;
+    min-height: 10lh;
+    max-height: 100%;
+    height:100%;
     display: block;
     background: #000;
     color: #fff;
