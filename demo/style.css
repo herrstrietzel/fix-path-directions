@@ -8,7 +8,7 @@ body {
 
 svg {
     width: 100%;
-    display:block;
+    display: block;
     border: 1px solid #ccc;
     overflow: visible;
 }
@@ -19,12 +19,24 @@ svg {
     stroke: green
 }
 
+label{
+    display:inline-block;
+}
+
+
 .grd {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 1em;
     margin-bottom: 2em;
 }
+
+@media (min-width:640px) {
+    .grd {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
 
 textarea {
     width: 100%;

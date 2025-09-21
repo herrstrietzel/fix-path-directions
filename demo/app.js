@@ -1,41 +1,76 @@
 let paths = document.querySelectorAll("path");
 
-function fixPaths(paths) {
-    /**
-     * options:
-     * arcToCubic:
-     * retain `A` (arc) commands or convert them to cubic bézier approximations
-     * quadraticToCubic:
-     * retain quadratic bézier commands or convert them to cubic
-     */
+let pathInput = document.getElementById('pathInput');
+let pathInputFixed = document.getElementById('pathInputFixed');
+
+let svgPreviewOriginal = document.getElementById('svgPreviewOriginal');
+let pathOriginal = document.getElementById('pathOriginal');
+
+
+let svgPreview = document.getElementById('svgPreview');
+let path = document.getElementById('path');
+
+
+let btnReversePaths = document.getElementById('btnReversePaths');
+let showDirections = document.getElementById('showDirections');
+
+
+updateFixedPath(pathInput.value, path)
+
+pathInput.addEventListener('input', e => {
+    updateFixedPath(pathInput.value, path)
+});
+
+
+function updateFixedPath(d, target){
+
+    //console.log(d, target);
+    let dNew = fixPathData(d.trim());
+    target.setAttribute('d', dNew);
+
+    // original
+    pathOriginal.setAttribute('d', d);
+
+
+    let svg = target.closest('svg');
+    adjustViewBox(svg)
+    adjustViewBox(svgPreviewOriginal)
+
+    pathInput.value = d.trim();
+    pathInputFixed.value=dNew;
+
+}
+
+
+
+function fixPathData(d) {
+
     let options = {
         arcToCubic: false,
         quadraticToCubic: false,
         toClockwise: true
     };
 
-    paths.forEach((path) => {
-        // get stringified pathdata from element
-        let d = path.getAttribute("d");
+    // parse and optimize path directions
+    let pathData = getFixedPathData(d, options);
 
-        // parse and optimize path directions
-        let pathData = getFixedPathData(d, options);
+    // stringify new pathdata and apply
+    let dNew = pathDataToD(pathData);
 
-        // stringify new pathdata and apply
-        let dNew = pathDataToD(pathData);
-        path.setAttribute("d", dNew);
-    });
-
-    //only for illustration
-    showPathdata(paths);
+    return dNew;
 }
+
+
+
+function fixPaths(paths) {
+
+    updateFixedPath(pathInput.value, path)
+}
+
 
 /**
  * only for illustration
  */
-showPathdata(paths);
-updatePathdata(paths);
-
 
 showDirections.addEventListener("input", (e) => {
     if (showDirections.checked) {
@@ -45,38 +80,19 @@ showDirections.addEventListener("input", (e) => {
     }
 });
 
-function reverseAllPaths(paths) {
-    paths.forEach((path) => {
-        let d = path.getAttribute("d");
-        let pathData = reversePathData(d);
 
-        let dNew = pathDataToD(pathData);
-        path.setAttribute("d", dNew);
-    });
 
-    showPathdata(paths);
-}
+btnReversePaths.addEventListener('click', e=>{
+    let d = path.getAttribute("d");
+    let pathData = reversePathData(d);
 
-function showPathdata(paths) {
-    paths.forEach((path) => {
-        let d = path.getAttribute("d");
-        let textarea = path.closest(".grd").querySelector("textarea");
-        textarea.value = d;
-    });
-}
+    let dNew = pathDataToD(pathData);
+    path.setAttribute("d", dNew);
+    pathInputFixed.value = dNew;
 
-function updatePathdata(paths) {
-    paths.forEach((path) => {
-        let svg = path.closest('svg');
-        let d = path.getAttribute("d");
-        let textarea = path.closest(".grd").querySelector("textarea");
-        textarea.addEventListener('input', (e) => {
-            let newD = textarea.value;
-            path.setAttribute("d", newD)
-            adjustViewBox(svg)
-        })
-    });
-}
+})
+
+
 
 
 /**
